@@ -62,7 +62,7 @@ form.addEventListener('submit', (event) => {
       newQCell.textContent = data.question;
       newRow.appendChild(newQCell);
       const newACell = document.createElement('td');
-      if (isURL(data.answer)) {
+      if (iform) {
         const img = document.createElement('img');
         img.src = data.answer;
         img.height = 64;

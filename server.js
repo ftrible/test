@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const csv = require('csv-parser');
 const { Configuration, OpenAIApi } = require("openai");
 const fs = require('fs');
+const path = require('path');
 
 // OpenAI configuration
 const key = process.env.OPENAI_API_KEY;
@@ -15,11 +16,15 @@ const preprompt = 'I am a highly intelligent question answering bot. If you ask 
 // Express-based app
 const app = express();
 
+//server info
+const hostname = '127.0.0.1';
+const port = 8080;
+
 // Debug mode not to call OpenAI API
 let debug = true;
 
 // Csv file to save image history
-const log = "log.csv";
+const logFile = "log.csv";
 
 // Middleware to parse request body
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -27,6 +32,19 @@ app.use(bodyParser.json());
 
 // Serve static files from 'htdocs' directory
 app.use(express.static('htdocs'));
+
+// save base 64 data into a local file
+function saveToImage(fn,base64) {
+    // Pipes an image with "new-path.jpg" as the name.
+    const localName=fn.replace(/\s+/g, '')+".jpg";
+    const fileName=path.join(__dirname, "htdocs", localName);
+    const buffer = Buffer.from(base64, "base64");
+    fs.writeFileSync(fileName, buffer);
+    console.log("created "+fileName);
+    return localName;
+}
+
+//console.log(path.join(__dirname, "htdocs", "sample"+".jpg"));
 
 // Function to save data to a file
 function saveToFile(filePath, q, a) {
@@ -80,7 +98,7 @@ app.post('/', (req, res) => {
 // Get route to send image history
 app.get('/history', (req, res) => {
     const csvData = [];
-    fs.createReadStream(log)
+    fs.createReadStream(logFile)
         .pipe(csv())
         .on('data', (row) => {
             csvData.push(row);
@@ -101,9 +119,14 @@ app.post('/image', (req, res) => {
             prompt: question,
             n: 1,
             size: "256x256",
+            response_format: "b64_json"
         }).then((completion) => {
-            answer = completion.data.data[0].url;
-            saveToFile(log, question, answer);
+            //console.log(completion.data.data[0]);
+            answer = completion.data.data[0].b64_json;
+            const name = saveToImage(question,answer);
+            console.log('url='+name);
+            saveToFile(logFile, question, name);
+            answer=name;
             res.json({ question, answer });
         }).catch((error) => {
             console.error('OpenAI API request failed:', error);
@@ -134,9 +157,7 @@ app.get('/debug', (req, res) => {
 });
 
 // Start the server
-const hostname = '127.0.0.1';
-const port = 8080;
 
 app.listen(port, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
+    console.log(`Server running at https://${hostname}:${port}/`);
 });
