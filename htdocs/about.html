@@ -1,0 +1,62 @@
+<html>
+
+<head>
+    <meta charSet="utf-8" />
+    <title>Test Node.js with OpenAI - About</title>
+</head>
+
+<body>
+    <link rel="stylesheet" href="style.css" />
+    <header>About This site</header>
+    <section>
+        <nav>
+            <ul>
+                <li><a href="images.html">Generate Images</a></li>
+                <li><a href="index.html">Answer Questions</a></li>
+            </ul>
+        </nav>
+        <article>
+            <p>Exercise using Node.js and OpenAI API</p>
+            <p>See <a href="https://platform.openai.com/docs/api-reference/chat" target="_blank">Open AI Chat API</a>
+            </p>
+            <p>See <a href="https://platform.openai.com/docs/api-reference/images" target="_blank">Open AI Image API</a>
+            </p>
+        </article>
+    </section>
+    <footer>Copyright 2023 - François Trible
+        <input type="checkbox" id="debugButton" value="Debug" checked="true">Debug</input>
+    </footer>
+    <script>
+        const debugButton = document.getElementById('debugButton');
+        debugButton.addEventListener('change', function () {
+            const isChecked = debugButton.checked;
+            // Send an HTTP request to the server to update the debug state
+            fetch('/debug', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ debug: isChecked })
+            }).then(response => {
+                if (response.ok) {
+                    console.log('Debug mode updated successfully');
+                } else {
+                    console.error('Failed to update debug mode');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        });
+        fetch('/debug')
+            .then(response => response.json())
+            .then(data => {
+                const debugValue = data.debug;
+                debugButton.checked = debugValue;
+                console.log('Debug mode initialized:', debugValue);
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+    </script>
+</body>
+
+</html>

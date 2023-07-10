@@ -1,0 +1,41 @@
+<html>
+
+<head>
+   <meta charSet="utf-8" />
+   <title>Test Node.js with OpenAI - Images</title>
+</head>
+
+<body>
+   <link rel="stylesheet" href="style.css" />
+   <header>Test Node.js with OpenAI - Images</header>
+   <section>
+      <nav>
+         <ul>
+            <li><a href="about.html">About This example</a></li>
+            <li><a href="index.html">Answer Questions</a></li>
+         </ul>
+      </nav>
+      <article>
+         <h1>Enter your Description</h1>
+         <form action="/image" method="post" id="formImage">
+            <input type="text" name="data" placeholder="Enter description" id="question" value="a small red bear">
+            <button type="submit" id="submitButton">Submit</button>
+         </form>
+         <h1>History</h1>
+         <table>
+            <thead>
+               <tr>
+                  <th>Description</th>
+                  <th>Image</th>
+               </tr>
+            </thead>
+            <tbody id="history"></tbody>
+         </table>
+         <button type="button" id="resetButton">Reset History</button>
+      </article>
+   </section>
+   <footer>Copyright 2023 - François Trible</footer>
+   <script src="script.js"></script>
+</body>
+
+</html>

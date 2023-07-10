@@ -1,0 +1,41 @@
+<html>
+
+<head>
+   <meta charSet="utf-8" />
+   <title>Test Node.js with OpenAI - Chat</title>
+</head>
+
+<body>
+   <link rel="stylesheet" href="style.css" />
+   <header>Test Node.js with OpenAI - Chat</header>
+   <section>
+      <nav>
+         <ul>
+            <li><a href="about.html">About This example</a></li>
+            <li><a href="images.html">Generate Images</a></li>
+         </ul>
+      </nav>
+      <article>
+         <h1>Enter your question</h1>
+         <form action="/" method="post" id="formQuestion">
+            <input type="text" name="data" placeholder="Enter question" id="question" value="How many dozens in 30"> ?
+            <button type="submit" id="submitButton">Submit</button>
+         </form>
+         <h1>History</h1>
+         <table>
+            <thead>
+               <tr>
+                  <th>Questions</th>
+                  <th>Answers</th>
+               </tr>
+            </thead>
+            <tbody id="history"></tbody>
+         </table>
+         <button type="button" id="resetButton">Reset History</button>
+      </article>
+   </section>
+   <footer>Copyright 2023 - François Trible</footer>
+   <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,137 @@
+:root {
+  --main-bg-color:hsl(244, 90%, 50%);
+  --mhue:244;
+  --msat:90%;
+  --mlum:50%;
+}
+body {
+  font-family: Arial, sans-serif;
+  margin: 10px;
+}
+
+h1 {
+  color: #333;
+}
+
+form {
+  margin-bottom: 10px;
+}
+
+input[type="text"] {
+  padding: 5px;
+  width: 300px;
+}
+
+button {
+  padding: 5px 10px;
+  background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.5),1);
+  color: #fff;
+  border: none;
+  cursor: inherit;
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+button:disabled, button[disabled]{
+  /*border: 1px solid #999999;*/
+  background-color: #cccccc;
+  color: #666666;
+}
+
+button:hover {
+  transform: scale(1.1);
+}
+nav a {
+  text-decoration: none;
+  padding: 5px 10px;
+  background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.75), 1);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+th {
+  background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.3), 1);
+  color: #fff;
+  padding: 10px;
+  text-align: left;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.image-hover {
+/*  transition: all 0.5s;*/
+  transition: all 0.3s;
+  border-radius: 10px;
+}
+
+.image-hover:hover {
+  transform: scale(4);
+  border-radius: 0px;
+}
+
+/* Style the header */
+header {
+  background-color: hsla(var(--mhue),var(--msat),var(--mlum), 1);
+  padding: 10px;
+  text-align: center;
+  font-size: 25px;
+  color: white;
+}
+
+/* Container for flexboxes */
+section {
+  display: -webkit-flex;
+  display: flex;
+}
+
+/* Style the navigation menu */
+nav {
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  background:white;
+  /*padding: 10px;*/
+}
+
+/* Style the list inside the menu */
+nav ul {
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Style the content */
+article {
+  -webkit-flex: 3;
+  -ms-flex: 3;
+  flex: 3;
+  background-color: white;
+  padding: 10px;
+  border: #333;
+  border-style: outset;
+}
+
+/* Style the footer */
+footer {
+  background-color:white;
+  color: black;
+  padding: 10px;
+  text-align: right;
+}
+
+/* Responsive layout - makes the menu and the content (inside the section) sit on top of each other instead of next to each other */
+@media (max-width: 700px) {
+  section {
+    -webkit-flex-direction: column;
+    flex-direction: column;
+  }
+}
