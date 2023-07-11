@@ -32,13 +32,13 @@ if (iform) { // Image page - change post path and load history
     });
 }
 
-// Utility function to check if a string is an URL
+/* Utility function to check if a string is an URL
 function isURL(str) {
   const pattern = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/gm;
   const rtn = pattern.test(str);
   console.log('check ' + str + " -> " + rtn);
   return rtn;
-}
+}*/
 
 // Manage submit
 form.addEventListener('submit', (event) => {

@@ -5,6 +5,7 @@ const csv = require('csv-parser');
 const { Configuration, OpenAIApi } = require("openai");
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
 
 // OpenAI configuration
 const key = process.env.OPENAI_API_KEY;
@@ -110,6 +111,7 @@ app.get('/history', (req, res) => {
 
 // POST route to retrieve image descriptions and generate response
 app.post('/image', (req, res) => {
+    console.dir(req.body);
     const { data: question } = req.body;
     let answer = 'Failed to generate a response';
     if (!debug) {
@@ -118,13 +120,13 @@ app.post('/image', (req, res) => {
         const completion = openai.createImage({
             prompt: question,
             n: 1,
-            size: "256x256",
+            size: req.body.size,
             response_format: "b64_json"
         }).then((completion) => {
             //console.log(completion.data.data[0]);
             answer = completion.data.data[0].b64_json;
             const name = saveToImage(question,answer);
-            console.log('url='+name);
+            //console.log('url='+name);
             saveToFile(logFile, question, name);
             answer=name;
             res.json({ question, answer });
@@ -144,20 +146,27 @@ app.post('/image', (req, res) => {
 app.post('/debug', (req, res) => {
     const { debug:ddebug } = req.body;
     debug = ddebug === true;
-    console.log("Retrieved Debug="+debug);
+    //console.log("Retrieved Debug="+debug);
     res.sendStatus(200); // Respond with a success status code
   });
 
 // get root to manage the debug button : Initialize it
 app.get('/debug', (req, res) => {
     // Send the current value of the debug variable as the response
-    console.log("Send Debug="+debug);
+    //console.log("Send Debug="+debug);
     res.json({ debug });
     // You can also set other response headers if needed, e.g., 'Content-Type'
 });
 
 // Start the server
-
+// for production app.set('env','production');
 app.listen(port, () => {
-    console.log(`Server running at https://${hostname}:${port}/`);
+    console.log(`Server running at http://${hostname}:${port}/`);
 });
+/* to start a https server
+const options = {
+    key: fs.readFileSync('client-key.pem'),
+    cert: fs.readFileSync('client-cert.pem')
+};
+   
+https.createServer(options, app).listen(443);*/
