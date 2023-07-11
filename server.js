@@ -2,16 +2,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const csv = require('csv-parser');
-const { Configuration, OpenAIApi } = require("openai");
+const gpt = require("openai");
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
 // OpenAI configuration
 const key = process.env.OPENAI_API_KEY;
-const configuration = new Configuration({ apiKey: key });
+const configuration = new gpt.Configuration({ apiKey: key });
+
 // OpenAI API
-const openai = new OpenAIApi(configuration);
+const openai = new gpt.OpenAIApi(configuration);
 const preprompt = 'I am a highly intelligent question answering bot. If you ask me a question that is rooted in truth, I will give you the answer. If you ask me a question that is nonsense, trickery, or has no clear answer, I will respond with "Unknown"';
 
 // Express-based app
@@ -24,9 +25,8 @@ const port = 8080;
 // Debug mode not to call OpenAI API
 let debug = true;
 
-// Csv file to save image history
+// Csv files to save history 
 const logImageFile = "log.csv";
-// Csv file to save question history
 const logQuestionFile = "qlog.csv";
 
 // Middleware to parse request body
@@ -36,26 +36,22 @@ app.use(bodyParser.json());
 // Serve static files from 'htdocs' directory
 app.use(express.static('htdocs'));
 
-// save base 64 data into a local file
-function saveToImage(fn,base64) {
-    // Pipes an image with "new-path.jpg" as the name.
-    const localName=fn.replace(/\s+/g, '')+".jpg";
-    const fileName=path.join(__dirname, "htdocs", localName);
+// save base 64 data into a local jpg file
+function saveToImage(fn, base64) {
+    // remove spaces from name
+    const localName = fn.replace(/\s+/g, '') + ".jpg";
+    // build full name
+    const fileName = path.join(__dirname, "htdocs", localName);
     const buffer = Buffer.from(base64, "base64");
     fs.writeFileSync(fileName, buffer);
-    console.log("created "+fileName);
     return localName;
 }
 
-//console.log(path.join(__dirname, "htdocs", "sample"+".jpg"));
-
-// Function to save data to a file
+// Function to save key/value data to a csv file
 function saveToFile(filePath, q, a) {
     fs.appendFile(filePath, '"' + q + '","' + a + '"\n', (error) => {
         if (error) {
             console.error('Failed to save file:', error);
-        } else {
-           // console.log('File saved successfully.');
         }
     });
 }
@@ -92,10 +88,11 @@ app.post('/', (req, res) => {
             res.json({ question, answer });
         });
     } else {
-        answer = "Deactivate debug mode";
-        setTimeout(function() {
+        answer = "No OPENAPI Call (debug mode)";
+        // wait 1 sec to answer
+        setTimeout(function () {
             res.json({ question, answer });
-          }, 1000);
+        }, 1000);
     }
 });
 
@@ -108,7 +105,6 @@ app.get('/history', (req, res) => {
             csvData.push(row);
         })
         .on('end', () => {
-            console.log(csvData);
             res.json(csvData);
         });
 });
@@ -142,30 +138,32 @@ app.post('/image', (req, res) => {
         }).then((completion) => {
             //console.log(completion.data.data[0]);
             answer = completion.data.data[0].b64_json;
-            const name = saveToImage(question,answer);
+            const name = saveToImage(question, answer);
             //console.log('url='+name);
             saveToFile(logImageFile, question, name);
-            answer=name;
+            answer = name;
             res.json({ question, answer });
         }).catch((error) => {
             console.error('OpenAI API request failed:', error);
             res.json({ question, answer });
         });
     } else {
-        answer = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
-        setTimeout(function() {
+        // debug mode - return random image
+        answer = 'debug.png';
+        // wait 1 sec to answer
+        setTimeout(function () {
             res.json({ question, answer });
-          }, 1000);
+        }, 1000);
     }
 });
 
 // post root to manage the debug button: React when it changes
 app.post('/debug', (req, res) => {
-    const { debug:ddebug } = req.body;
+    const { debug: ddebug } = req.body;
     debug = ddebug === true;
     //console.log("Retrieved Debug="+debug);
     res.sendStatus(200); // Respond with a success status code
-  });
+});
 
 // get root to manage the debug button : Initialize it
 app.get('/debug', (req, res) => {
@@ -186,4 +184,4 @@ const options = {
     cert: fs.readFileSync('client-cert.pem')
 };
    
-https.createServer(options, app).listen(443);*/
+https.createServer(options, app).listen(port);*/

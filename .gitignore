@@ -5,3 +5,4 @@
 /htdocs/*.jpg
 /client*
 /.vscode
+/.DS_Store
