@@ -1,5 +1,7 @@
 /log.csv
+/qlog.csv
 /node_modules
 /package-lock.json
 /htdocs/*.jpg
 /client*
+/.vscode

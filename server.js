@@ -25,7 +25,9 @@ const port = 8080;
 let debug = true;
 
 // Csv file to save image history
-const logFile = "log.csv";
+const logImageFile = "log.csv";
+// Csv file to save question history
+const logQuestionFile = "qlog.csv";
 
 // Middleware to parse request body
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -83,6 +85,7 @@ app.post('/', (req, res) => {
             presence_penalty: 0,
         }).then((completion) => {
             answer = completion.data.choices[0].message.content;
+            saveToFile(logQuestionFile, question, answer);
             res.json({ question, answer });
         }).catch((error) => {
             console.error('OpenAI API request failed:', error.config);
@@ -96,10 +99,24 @@ app.post('/', (req, res) => {
     }
 });
 
-// Get route to send image history
+// Get route to send question history
 app.get('/history', (req, res) => {
     const csvData = [];
-    fs.createReadStream(logFile)
+    fs.createReadStream(logQuestionFile)
+        .pipe(csv())
+        .on('data', (row) => {
+            csvData.push(row);
+        })
+        .on('end', () => {
+            console.log(csvData);
+            res.json(csvData);
+        });
+});
+
+// Get route to send image history
+app.get('/imagehistory', (req, res) => {
+    const csvData = [];
+    fs.createReadStream(logImageFile)
         .pipe(csv())
         .on('data', (row) => {
             csvData.push(row);
@@ -127,7 +144,7 @@ app.post('/image', (req, res) => {
             answer = completion.data.data[0].b64_json;
             const name = saveToImage(question,answer);
             //console.log('url='+name);
-            saveToFile(logFile, question, name);
+            saveToFile(logImageFile, question, name);
             answer=name;
             res.json({ question, answer });
         }).catch((error) => {

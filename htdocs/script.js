@@ -8,37 +8,43 @@ const history = document.getElementById('history');
 let path = '/';
 let form = qform;
 
-if (iform) { // Image page - change post path and load history
+if (iform) { // Image page
   path = "/image";
   form = iform;
-  fetch('/history')
+}
+// retrieve history
+  fetch(path+"history")
     .then((response) => response.json())
     .then((data) => {
-      const tableBody = document.getElementById('history');
+      //const tableBody = document.getElementById('history');
       data.forEach((row) => {
-        const newRow = document.createElement('tr');
-        const imageCell = document.createElement('td');
-        const imageElement = document.createElement('img');
-        const descriptionCell = document.createElement('td');
-        descriptionCell.textContent = row.description;
-        newRow.appendChild(descriptionCell);
-        imageElement.src = row.url;
-        imageElement.height = 64;
-        imageElement.classList.add('image-hover');
-        imageCell.appendChild(imageElement);
-        newRow.appendChild(imageCell);
-        tableBody.appendChild(newRow);
+        console.log(row);
+       if (iform) {
+        createRow(row.description,row.url);
+       } else {
+        createRow(row.question,row.answer);
+       }
       });
     });
-}
 
-/* Utility function to check if a string is an URL
-function isURL(str) {
-  const pattern = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/gm;
-  const rtn = pattern.test(str);
-  console.log('check ' + str + " -> " + rtn);
-  return rtn;
-}*/
+function createRow(question,answer) {
+  const newRow = document.createElement('tr');
+  const newQCell = document.createElement('td');
+  newQCell.textContent = question;
+  newRow.appendChild(newQCell);
+  const newACell = document.createElement('td');
+  if (iform) {
+    const img = document.createElement('img');
+    img.src = answer;
+    img.height = 64;
+    img.classList.add('image-hover');
+    newACell.appendChild(img);
+  } else {
+    newACell.textContent = answer;
+  }
+  newRow.appendChild(newACell);
+  history.appendChild(newRow);
+}
 
 // Manage submit
 form.addEventListener('submit', (event) => {
@@ -57,22 +63,7 @@ form.addEventListener('submit', (event) => {
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
-      const newRow = document.createElement('tr');
-      const newQCell = document.createElement('td');
-      newQCell.textContent = data.question;
-      newRow.appendChild(newQCell);
-      const newACell = document.createElement('td');
-      if (iform) {
-        const img = document.createElement('img');
-        img.src = data.answer;
-        img.height = 64;
-        img.classList.add('image-hover');
-        newACell.appendChild(img);
-      } else {
-        newACell.textContent = data.answer;
-      }
-      newRow.appendChild(newACell);
-      history.appendChild(newRow);
+      createRow(data.question,data.answer);
       form.reset();
       document.body.style.cursor = 'default';
       submitButton.disabled = false;
