@@ -56,7 +56,7 @@ function saveToImage(fn, base64) {
     const fileName = path.join(__dirname, "htdocs", "uploads", localName);
     const buffer = Buffer.from(base64, "base64");
     fs.writeFileSync(fileName, buffer);
-    return localName;
+    return "uploads/" +localName;
 }
 
 // Function to save key/value data to a csv file
@@ -169,7 +169,7 @@ app.post('/image', (req, res) => {
         }).then((completion) => {
             answer = completion.data.data[0].b64_json;
             const name = saveToImage(question, answer);
-            saveToFile(logImageFile, '"description","url"\n', question, "uploads/"+name);
+            saveToFile(logImageFile, '"description","url"\n', question, name);
             answer = name;
             res.json({ question, answer });
         }).catch((error) => {
@@ -200,7 +200,7 @@ app.post('/variation',  upload.single('data'),(req, res) => {
             "b64_json"
         ).then((completion) => {
             answer = completion.data.data[0].b64_json;
-            const name = saveToImage(question, answer);
+            const name = saveToImage(req.file.filename, answer);
             saveToFile(logVariationFile, '"question","answer"\n', question, name);
             answer = name;
             res.json({ question, answer });
