@@ -2,7 +2,8 @@
 /qlog.csv
 /node_modules
 /package-lock.json
-/htdocs/*.jpg
+/htdocs/*.png
+/htdocs/uploads/*.png
 /client*
 /.vscode
 /.DS_Store

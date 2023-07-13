@@ -12,15 +12,15 @@
       <nav>
          <ul>
             <li><a href="index.html">Answer Questions</a></li>
-            <li><a href="images.html" class="disabled">Generate Images</a></li>
-            <li><a href="variations.html">Generate Variations</a></li>
+            <li><a href="images.html">Generate Images</a></li>
+            <li><a href="variations.html" class="disabled">Generate Variations</a></li>
             <li><a href="about.html">About This example</a></li>
          </ul>
       </nav>
       <article>
          <h1>Enter your Description</h1>
-         <form action="/image" method="post" id="formImage">
-            <input type="text" name="data" placeholder="Enter description" id="question" value="a small red bear">
+         <form action="/variation" method="post" id="formVariation" enctype="multipart/form-data">
+            <input type="file" name="data" accept=".png" id="file">
             <button type="submit" id="submitButton">Submit</button>
             <input type="radio" name="size" value="256x256" id="256" checked><label for="256">256</label>      
             <input type="radio" name="size" value="512x512" id="512"><label for="512">512</label> 
