@@ -2,8 +2,9 @@
 /qlog.csv
 /node_modules
 /package-lock.json
-/htdocs/*.png
 /htdocs/uploads/*.png
 /client*
 /.vscode
 /.DS_Store
+/htdocs/.DS_Store
+/htdocs/uploads/.DS_Store
