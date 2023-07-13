@@ -1,8 +1,8 @@
 :root {
-  --main-bg-color:hsl(244, 90%, 50%);
-  --mhue:244;
-  --msat:90%;
-  --mlum:50%;
+  --main-bg-color:hsl(37, 40%, 50%);
+  --mhue:215;
+  --msat:50%;
+  --mlum:70%;
 }
 body {
   font-family: Arial, sans-serif;
@@ -25,11 +25,15 @@ input[type="text"] {
 button {
   padding: 5px 10px;
   background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.5),1);
-  color: #fff;
+  color: white;
   border: none;
   cursor: inherit;
   border-radius: 10px;
   transition: all 0.3s;
+}
+.pagination {
+  background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.5),0.1);
+  color:black;
 }
 button:disabled, button[disabled]{
   /*border: 1px solid #999999;*/
@@ -37,6 +41,20 @@ button:disabled, button[disabled]{
   color: #666666;
 }
 
+.message {
+  background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)),0.75);
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 30%;
+  color: white;
+  font-size: 25; 
+  text-align: center;
+  margin: 10px;
+}
 .disabled {
   background-color: #cccccc;
   color: #666666;
@@ -57,9 +75,6 @@ table {
   border-collapse: collapse;
   width: 100%;
   margin-bottom: 20px;
-  display: block;
-  max-height: 500px;
-  overflow: auto;
 }
 
 th {
@@ -73,6 +88,13 @@ td {
   padding: 10px;
   border-bottom: 1px solid #ddd;
 }
+table tr:nth-child(odd) td{
+  background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.5), 0.3);
+
+}
+table tr:nth-child(even) td{
+  background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.8), 0.3);
+}
 
 .image-hover {
 /*  transition: all 0.5s;*/
@@ -81,7 +103,7 @@ td {
 }
 
 .image-hover:hover {
-  transform: scale(4);
+  transform: translateX(-84px) translateY(-84px) scale(4);
   border-radius: 0px;
 }
 
@@ -105,7 +127,7 @@ nav {
   -webkit-flex: 1;
   -ms-flex: 1;
   flex: 1;
-  background:white;
+  background:hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.5),1);
   /*padding: 10px;*/
 }
 
@@ -122,10 +144,8 @@ article {
   -webkit-flex: 3;
   -ms-flex: 3;
   flex: 3;
-  background-color: white;
+  background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.5),0.2);
   padding: 10px;
-  border: #333;
-  border-style: outset;
 }
 
 /* Style the footer */

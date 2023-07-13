@@ -2,12 +2,12 @@
 
 <head>
    <meta charSet="utf-8" />
-   <title>Test Node.js with OpenAI - Images</title>
+   <title>OpenAI - Image Creation</title>
 </head>
 
 <body>
    <link rel="stylesheet" href="style.css" />
-   <header>Test Node.js with OpenAI - Images</header>
+   <header>OpenAI - Image Creation</header>
    <section>
       <nav>
          <ul>
@@ -15,12 +15,12 @@
             <li><a href="images.html" class="disabled">Generate Images</a></li>
             <li><a href="variations.html">Generate Variations</a></li>
             <li><a href="about.html">About This example</a></li>
+            <li><div id="message" class="message"></div></li>
          </ul>
       </nav>
       <article>
-         <h1>Enter your Description</h1>
          <form action="/image" method="post" id="formImage">
-            <input type="text" name="data" placeholder="Enter description" id="question" value="a small red bear">
+            <input type="text" name="data" placeholder="Enter your description" id="question">
             <button type="submit" id="submitButton">Submit</button>
             <input type="radio" name="size" value="256x256" id="256" checked><label for="256">256</label>      
             <input type="radio" name="size" value="512x512" id="512"><label for="512">512</label> 
@@ -36,7 +36,7 @@
             </thead>
             <tbody id="history"></tbody>
          </table>
-         <button type="button" id="resetButton">Reset History</button>
+         <div id="pagination"></div>
       </article>
    </section>
    <footer>Copyright 2023 - François Trible</footer>

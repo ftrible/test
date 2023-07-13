@@ -53,7 +53,7 @@ function saveToImage(fn, base64) {
     // remove spaces from name
     const localName = fn.replace(/\s+/g, '') + ".png";
     // build full name
-    const fileName = path.join(__dirname, "htdocs", localName);
+    const fileName = path.join(__dirname, "htdocs", "uploads", localName);
     const buffer = Buffer.from(base64, "base64");
     fs.writeFileSync(fileName, buffer);
     return localName;
@@ -78,8 +78,6 @@ function saveToFile(filePath,f, q, a) {
 // POST route to retrieve question and generate response
 app.post('/', (req, res) => {
     const { data: question } = req.body;
-//    const question = req.body.data;
-    console.log(req.body);
     let answer = 'Failed to generate a response';
     if (!debug) {
         // Make the API request to OpenAI
@@ -112,7 +110,6 @@ app.post('/', (req, res) => {
         answer = "No OPENAPI Call (debug mode)";
         // wait 1 sec to answer
         setTimeout(function () {
-            console.log({ question, answer });
             res.json({ question, answer });
         }, 1000);
     }
@@ -163,7 +160,6 @@ app.post('/image', (req, res) => {
     const { data: question } = req.body;
     let answer = 'error.png';
     if (!debug) {
-        console.log("generating " + question)
         // Make the API request to OpenAI
         const completion = openai.createImage({
             prompt: question,
@@ -195,7 +191,6 @@ app.post('/variation',  upload.single('data'),(req, res) => {
     let answer = 'error.png';
     const question= "uploads/"+req.file.filename;
     
-    console.log("uploaded "+question);
     if (!debug) {
         // Make the API request to OpenAI
         const completion = openai.createImageVariation(
