@@ -2,7 +2,7 @@
   --main-bg-color:hsl(37, 40%, 50%);
   --mhue:215;
   --msat:50%;
-  --mlum:70%;
+  --mlum:80%;
 }
 body {
   font-family: Arial, sans-serif;
@@ -89,11 +89,11 @@ td {
   border-bottom: 1px solid #ddd;
 }
 table tr:nth-child(odd) td{
-  background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.5), 0.3);
+  background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.9), 0.4);
 
 }
 table tr:nth-child(even) td{
-  background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.8), 0.3);
+  background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.7), 0.4);
 }
 
 .image-hover {
@@ -110,6 +110,7 @@ table tr:nth-child(even) td{
 /* Style the header */
 header {
   background-color: hsla(var(--mhue),var(--msat),var(--mlum), 1);
+  background: linear-gradient(hsla(var(--mhue),var(--msat),var(--mlum), 1), hsla(var(--mhue),var(--msat),var(--mlum), 0.8) );
   padding: 10px;
   text-align: center;
   font-size: 25px;
@@ -127,8 +128,8 @@ nav {
   -webkit-flex: 1;
   -ms-flex: 1;
   flex: 1;
-  background:hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.5),1);
-  /*padding: 10px;*/
+  background-color:hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.5),1);
+  background: linear-gradient(hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.6), 1), hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.4), 0.8) );
 }
 
 /* Style the list inside the menu */
@@ -145,6 +146,8 @@ article {
   -ms-flex: 3;
   flex: 3;
   background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.5),0.2);
+  background: linear-gradient(hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.4), 0.2), hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.5), 0.6) );
+
   padding: 10px;
 }
 
