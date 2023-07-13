@@ -21,7 +21,6 @@ if (vform) { // Image page
 fetch(path + "history")
   .then((response) => response.json())
   .then((data) => {
-    //const tableBody = document.getElementById('history');
     data.forEach((row) => {
       console.log(row);
       if (iform) {
@@ -66,13 +65,7 @@ form.addEventListener('submit', (event) => {
   submitButton.disabled = true;
   let formData = new FormData(event.target);
   if(qform||iform) formData=new URLSearchParams(formData);
-  /*if(qform||iform) fetch(path, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded' // Add this line
-    },
-    body: new URLSearchParams(formData) // Update this line
-  }) */
+  
   fetch(path, {
     method: 'POST',
     body: formData

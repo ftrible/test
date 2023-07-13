@@ -60,7 +60,14 @@ function saveToImage(fn, base64) {
 }
 
 // Function to save key/value data to a csv file
-function saveToFile(filePath, q, a) {
+function saveToFile(filePath,f, q, a) {
+    if (!fs.existsSync(filePath)) {
+        fs.appendFile(filePath, f, (error) => {
+            if (error) {
+                console.error('Failed to create file:', error);
+            }
+        });
+    }
     fs.appendFile(filePath, '"' + q + '","' + a + '"\n', (error) => {
         if (error) {
             console.error('Failed to save file:', error);
@@ -95,7 +102,7 @@ app.post('/', (req, res) => {
             presence_penalty: 0,
         }).then((completion) => {
             answer = completion.data.choices[0].message.content;
-            saveToFile(logQuestionFile, question, answer);
+            saveToFile(logQuestionFile, '"question","answer"\n', question, answer);
             res.json({ question, answer });
         }).catch((error) => {
             console.error('OpenAI API request failed:', error.config);
@@ -166,7 +173,7 @@ app.post('/image', (req, res) => {
         }).then((completion) => {
             answer = completion.data.data[0].b64_json;
             const name = saveToImage(question, answer);
-            saveToFile(logImageFile, question, "uploads/"+name);
+            saveToFile(logImageFile, '"description","url"\n', question, "uploads/"+name);
             answer = name;
             res.json({ question, answer });
         }).catch((error) => {
@@ -199,7 +206,7 @@ app.post('/variation',  upload.single('data'),(req, res) => {
         ).then((completion) => {
             answer = completion.data.data[0].b64_json;
             const name = saveToImage(question, answer);
-            saveToFile(logVariationFile, question, name);
+            saveToFile(logVariationFile, '"question","answer"\n', question, name);
             answer = name;
             res.json({ question, answer });
         }).catch((error) => {
