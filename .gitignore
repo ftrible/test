@@ -1,5 +1,6 @@
 /log.csv
 /qlog.csv
+/vlog.csv
 /node_modules
 /package-lock.json
 /htdocs/uploads/*.png
