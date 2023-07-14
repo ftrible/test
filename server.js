@@ -229,7 +229,8 @@ app.get('/debug', (req, res) => {
     res.json({ debug });
 });
 
-
+// for mocha tests
+module.exports = app;
 // Start the server
 // for production app.set('env','production');
 
