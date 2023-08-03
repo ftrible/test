@@ -4,8 +4,10 @@
 /node_modules
 /package-lock.json
 /htdocs/uploads/*.png
+/htdocs/uploads/*.mp3
 /client*
 /.vscode
 /.DS_Store
 /htdocs/.DS_Store
 /htdocs/uploads/.DS_Store
+/bin/*

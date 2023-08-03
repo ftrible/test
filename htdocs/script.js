@@ -6,7 +6,8 @@ const vform = document.getElementById('formVariation');
 const history = document.getElementById('history');
 const message = document.getElementById('message');
 const pagination = document.getElementById('pagination');
-let tableData = [ ];
+const mike = document.getElementById('microphoneIcon');
+let tableData = [];
 const itemsPerPage = 5;
 
 function renderTable(pageNumber) {
@@ -29,10 +30,10 @@ function renderPagination() {
   pagination.innerHTML = '';
 
   // Render pagination buttons
-  if(totalPages>1)for (let i = 1; i <= totalPages; i++) {
+  if (totalPages > 1) for (let i = 1; i <= totalPages; i++) {
     const button = document.createElement('button');
     button.classList.add('pagination');
-    button.textContent = "Page "+i;
+    button.textContent = "Page " + i;
     button.addEventListener('click', () => {
       renderTable(i);
     });
@@ -51,9 +52,9 @@ if (vform) { // Image page
   path = "/variation";
   form = vform;
 }
-function addRow(description,url){
-  tableData.unshift({description,url});
-//  createRow(a,b);
+function addRow(description, url) {
+  tableData.unshift({ description, url });
+  //  createRow(a,b);
 }
 
 // retrieve history
@@ -72,6 +73,8 @@ fetch(path + "history")
     renderPagination();
   });
 
+const soundButton = '<button type="button">&#x1F508;</button>';
+
 function createRow(question, answer) {
   const newRow = document.createElement('tr');
   const newQCell = document.createElement('td');
@@ -85,6 +88,12 @@ function createRow(question, answer) {
     newQCell.textContent = question;
   }
   newRow.appendChild(newQCell);
+  if (!vform) {
+    const newmCell = document.createElement('td')
+    const speakerButton = createSoundButton(question);
+    newmCell.appendChild(speakerButton);
+    newRow.appendChild(newmCell);
+  }
   const newACell = document.createElement('td');
   if (iform || vform) {
     const img = document.createElement('img');
@@ -96,6 +105,12 @@ function createRow(question, answer) {
     newACell.textContent = answer;
   }
   newRow.appendChild(newACell);
+  if (!vform && !iform) {
+    const newmCell = document.createElement('td')
+    const speakerButton = createSoundButton(answer);
+    newmCell.appendChild(speakerButton);
+    newRow.appendChild(newmCell);
+  }
   history.appendChild(newRow);
 }
 
@@ -107,8 +122,8 @@ form.addEventListener('submit', (event) => {
   message.textContent = "Computing...";
   submitButton.disabled = true;
   let formData = new FormData(event.target);
-  if(qform||iform) formData=new URLSearchParams(formData);
-  
+  if (qform || iform) formData = new URLSearchParams(formData);
+
   fetch(path, {
     method: 'POST',
     body: formData
@@ -126,10 +141,66 @@ form.addEventListener('submit', (event) => {
     }).catch((error) => {
       console.log(error);
       document.body.style.cursor = 'default';
-      message.textContent ="Error";
+      message.textContent = "Error";
       setTimeout(function () {
         message.style.display = 'none';
       }, 1000);
       submitButton.disabled = false;
     });
 });
+
+// Event listener for the microphone icon click
+mike.addEventListener('click', async function () {
+  try {
+    // Make an API request to the server-side analyzeSpeech function
+    const response = await fetch('/analyze', {
+      method: 'POST'
+    });
+    // Handle the response as needed
+    if (response.ok) {
+      console.log('ok');
+    } else {
+      console.error('Error analyzing speech:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+});
+
+
+function createSoundButton(question) {
+  const speakerButton = document.createElement('button');
+  speakerButton.type = 'button';
+  speakerButton.innerHTML = '&#x1F508;';
+  speakerButton.addEventListener('click',playSound(speakerButton, question));
+  return speakerButton;
+}
+
+function playSound(button,question) {
+  return async function () {
+    if (button.audioURL) {
+      console.log('play file', button.audioURL);
+      var music = new Audio(button.audioURL);
+      music.play();
+    } else try {
+      // Make an API request to the server-side playSpeech function
+      const response = await fetch('/play', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data: question })
+      });
+      // Handle the response as needed
+      if (response.ok) {
+        const data = await response.json();
+        button.audioURL = data.file; 
+      } else {
+        console.error('Error generating speech:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+  };
+}
+

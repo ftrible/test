@@ -5,7 +5,8 @@ const csv = require('csv-parser');
 const gpt = require("openai");
 const fs = require('fs');
 const path = require('path');
-//const https = require('https');
+const { playSpeech } = require('./speak');
+const { SpeechListener } = require('./listen');
 
 // OpenAI configuration
 const key = process.env.OPENAI_API_KEY;
@@ -19,12 +20,12 @@ const preprompt = 'I am a highly intelligent question answering bot. If you ask 
 const app = express();
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, 'htdocs/uploads/')
+        cb(null, 'htdocs/uploads/')
     },
     filename: function (req, file, cb) {
-      cb(null, Date.now() + path.extname(file.originalname)) ;
+        cb(null, Date.now() + path.extname(file.originalname));
     }
-  });
+});
 
 //const upload = multer({ dest: 'htdocs/uploads/' });
 const upload = multer({ storage: storage });
@@ -56,11 +57,11 @@ function saveToImage(fn, base64) {
     const fileName = path.join(__dirname, "htdocs", "uploads", localName);
     const buffer = Buffer.from(base64, "base64");
     fs.writeFileSync(fileName, buffer);
-    return "uploads/" +localName;
+    return "uploads/" + localName;
 }
 
 // Function to save key/value data to a csv file
-function saveToFile(filePath,f, q, a) {
+function saveToFile(filePath, f, q, a) {
     if (!fs.existsSync(filePath)) {
         fs.appendFile(filePath, f, (error) => {
             if (error) {
@@ -76,44 +77,7 @@ function saveToFile(filePath,f, q, a) {
 }
 
 // POST route to retrieve question and generate response
-app.post('/', (req, res) => {
-    const { data: question } = req.body;
-    let answer = 'Failed to generate a response';
-    if (!debug) {
-        // Make the API request to OpenAI
-        const completion = openai.createChatCompletion({
-            model: "gpt-3.5-turbo",
-            messages: [
-                {
-                    "role": "system",
-                    "content": preprompt
-                },
-                {
-                    "role": "user",
-                    "content": question
-                }
-            ],
-            temperature: 0.19,
-            max_tokens: 256,
-            top_p: 1,
-            frequency_penalty: 0,
-            presence_penalty: 0,
-        }).then((completion) => {
-            answer = completion.data.choices[0].message.content;
-            saveToFile(logQuestionFile, '"question","answer"\n', question, answer);
-            res.json({ question, answer });
-        }).catch((error) => {
-            console.error('OpenAI API request failed:', error.config);
-            res.json({ question, answer });
-        });
-    } else {
-        answer = "No OPENAPI Call (debug mode)";
-        // wait 1 sec to answer
-        setTimeout(function () {
-            res.json({ question, answer });
-        }, 1000);
-    }
-});
+app.post('/', callOpenAPI());
 
 // Get route to send question history
 app.get('/history', (req, res) => {
@@ -154,6 +118,23 @@ app.get('/variationhistory', (req, res) => {
         });
 });
 
+// Server-side route to handle /play POST request
+app.post('/play', async (req, res) => {
+    const { data: question } = req.body;
+    console.log(req.body);
+    try {
+      // Call the server-side playSpeech function passing the question as an argument
+      const file=await playSpeech(question);
+      console.log('Speech played successfully.' + question);
+      // Respond with a success status
+      res.json({ file: file });
+ //     res.sendStatus(200);
+    } catch (error) {
+      console.error('Error playing speech:', error);
+      res.status(500).json({ error: 'Error playing speech' });
+    }
+  });
+  
 // POST route to retrieve image descriptions and generate response
 app.post('/image', (req, res) => {
     console.dir(req.body);
@@ -186,15 +167,26 @@ app.post('/image', (req, res) => {
     }
 });
 
+app.post('/analyze', (req, res) => {
+    const s = new SpeechListener()
+        .on('transcribed', (transcript) => {
+            console.log(transcript);
+        })
+        .on('error', () => {
+            console.error(error);
+            res.sendStatus(500);
+        });
+});
+
 // POST route to retrieve image descriptions and generate response
-app.post('/variation',  upload.single('data'),(req, res) => {
+app.post('/variation', upload.single('data'), (req, res) => {
     let answer = 'error.png';
-    const question= "uploads/"+req.file.filename;
-    
+    const question = "uploads/" + req.file.filename;
+
     if (!debug) {
         // Make the API request to OpenAI
         const completion = openai.createImageVariation(
-            fs.createReadStream(path.join(__dirname,"htdocs",question)),
+            fs.createReadStream(path.join(__dirname, "htdocs", question)),
             1,
             req.body.size,
             "b64_json"
@@ -237,6 +229,49 @@ module.exports = app;
 app.listen(port, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
+
+function callOpenAPI() {
+    return (req, res) => {
+        const { data: question } = req.body;
+        let answer = 'Failed to generate a response';
+        if (!debug) {
+            // Make the API request to OpenAI
+            const completion = openai.createChatCompletion({
+                model: "gpt-3.5-turbo",
+                messages: [
+                    {
+                        "role": "system",
+                        "content": preprompt
+                    },
+                    {
+                        "role": "user",
+                        "content": question
+                    }
+                ],
+                temperature: 0.19,
+                max_tokens: 256,
+                top_p: 1,
+                frequency_penalty: 0,
+                presence_penalty: 0,
+            }).then((completion) => {
+                answer = completion.data.choices[0].message.content;
+                playSpeech(answer);
+                saveToFile(logQuestionFile, '"question","answer"\n', question, answer);
+                res.json({ question, answer });
+            }).catch((error) => {
+                console.error('OpenAI API request failed:', error.config);
+                res.json({ question, answer });
+            });
+        } else {
+            answer = "No OPENAPI Call (debug mode)";
+            // wait 1 sec to answer
+            setTimeout(function () {
+                playSpeech(answer);
+                res.json({ question, answer });
+            }, 1000);
+        }
+    };
+}
 /* to start a https server
 const options = {
     key: fs.readFileSync('client-key.pem'),
