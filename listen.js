@@ -54,7 +54,7 @@ class SpeechListener extends EventEmitter {
       onChunkEnd: async () => {
         if (buffer.length < samplesPerFrame * 20)
           return
-
+        this._recorder.stop()
         const time0 = Date.now()
         const wav = new WaveFile()
         wav.fromScratch(1, 16000, '16', buffer)
@@ -82,11 +82,5 @@ class SpeechListener extends EventEmitter {
     this._recorder.stop()
   }
 }
-/*
-const s=new SpeechListener()
-.on('transcribed', (transcript) => {
-    console.log(transcript);
-})
-.on('error', () => {
-    console.error(error);
-});*/
+
+module.exports = { SpeechListener };

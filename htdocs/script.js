@@ -9,6 +9,7 @@ const pagination = document.getElementById('pagination');
 const mike = document.getElementById('microphoneIcon');
 let tableData = [];
 const itemsPerPage = 5;
+let currentMusic = null;
 
 function renderTable(pageNumber) {
   const startIndex = (pageNumber - 1) * itemsPerPage;
@@ -62,7 +63,7 @@ fetch(path + "history")
   .then((response) => response.json())
   .then((data) => {
     data.forEach((row) => {
-      console.log(row);
+//      console.log(row);
       if (iform) {
         addRow(row.description, row.url);
       } else {
@@ -130,7 +131,7 @@ form.addEventListener('submit', (event) => {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
+ //     console.log(data);
       addRow(data.question, data.answer);
       renderTable(1);
       renderPagination();
@@ -151,20 +152,30 @@ form.addEventListener('submit', (event) => {
 
 // Event listener for the microphone icon click
 mike.addEventListener('click', async function () {
+  mike.disabled = true;
   try {
     // Make an API request to the server-side analyzeSpeech function
-    const response = await fetch('/analyze', {
+   const response = await fetch('/listen', {
       method: 'POST'
     });
     // Handle the response as needed
     if (response.ok) {
       console.log('ok');
+      const data = await response.json();
+      addRow(data.question, data.answer);
+      renderTable(1);
+      renderPagination();
+      mike.disabled = false;
     } else {
       console.error('Error analyzing speech:', response.statusText);
+      mike.disabled = false;
     }
   } catch (error) {
     console.error('Error:', error.message);
+    mike.disabled = false;
+    document.body.style.cursor = 'default';
   }
+
 });
 
 
@@ -175,7 +186,6 @@ function createSoundButton(question) {
   speakerButton.addEventListener('click',playSound(speakerButton, question));
   return speakerButton;
 }
-let currentMusic = null;
 
 function playMusic(button) {
   // Check if there is a currently playing music
@@ -191,7 +201,7 @@ function playMusic(button) {
   currentMusic = music;
  // Play the new music
   music.play();
-  console.log('disable');
+ // disable the button
   button.disabled = true;
  
   function endMusic() {
@@ -210,7 +220,7 @@ function playSound(button,question) {
       playMusic(button);
     } else try {
       button.disabled = true;
-      console.log('disable2');
+      document.body.style.cursor = 'progress';
       // Make an API request to the server-side playSpeech function
       const response = await fetch('/play', {
         method: 'POST',
@@ -232,6 +242,8 @@ function playSound(button,question) {
     } catch (error) {
       console.error('Error:', error.message);
       button.disabled = false;
+    } finally {
+      document.body.style.cursor = 'default';
     }
   };
 }

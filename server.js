@@ -121,11 +121,9 @@ app.get('/variationhistory', (req, res) => {
 // Server-side route to handle /play POST request
 app.post('/play', async (req, res) => {
     const { data: question } = req.body;
-    console.log(req.body);
     try {
       // Call the server-side playSpeech function passing the question as an argument
       const file=await playSpeech(question);
-      // console.log('Speech played successfully.' + question);
       // Return the filename
       res.json({ file: file });
     } catch (error) {
@@ -166,10 +164,11 @@ app.post('/image', (req, res) => {
     }
 });
 
-app.post('/analyze', (req, res) => {
+app.post('/listen', (req, res) => {
     const s = new SpeechListener()
         .on('transcribed', (transcript) => {
             console.log(transcript);
+            executeOpenAPI(transcript, res);
         })
         .on('error', () => {
             console.error(error);
@@ -232,44 +231,48 @@ app.listen(port, () => {
 function callOpenAPI() {
     return (req, res) => {
         const { data: question } = req.body;
-        let answer = 'Failed to generate a response';
-        if (!debug) {
-            // Make the API request to OpenAI
-            const completion = openai.createChatCompletion({
-                model: "gpt-3.5-turbo",
-                messages: [
-                    {
-                        "role": "system",
-                        "content": preprompt
-                    },
-                    {
-                        "role": "user",
-                        "content": question
-                    }
-                ],
-                temperature: 0.19,
-                max_tokens: 256,
-                top_p: 1,
-                frequency_penalty: 0,
-                presence_penalty: 0,
-            }).then((completion) => {
-                answer = completion.data.choices[0].message.content;
-                playSpeech(answer);
-                saveToFile(logQuestionFile, '"question","answer"\n', question, answer);
-                res.json({ question, answer });
-            }).catch((error) => {
-                console.error('OpenAI API request failed:', error.config);
-                res.json({ question, answer });
-            });
-        } else {
-            answer = "No OPENAPI Call (debug mode)";
-            // wait 1 sec to answer
-            setTimeout(function () {
-                playSpeech(answer);
-                res.json({ question, answer });
-            }, 1000);
-        }
+        executeOpenAPI(question, res);
     };
+}
+
+function executeOpenAPI(question, res) {
+    let answer = 'Failed to generate a response';
+    if (!debug) {
+        // Make the API request to OpenAI
+        const completion = openai.createChatCompletion({
+            model: "gpt-3.5-turbo",
+            messages: [
+                {
+                    "role": "system",
+                    "content": preprompt
+                },
+                {
+                    "role": "user",
+                    "content": question
+                }
+            ],
+            temperature: 0.19,
+            max_tokens: 256,
+            top_p: 1,
+            frequency_penalty: 0,
+            presence_penalty: 0,
+        }).then((completion) => {
+            answer = completion.data.choices[0].message.content;
+            playSpeech(answer);
+            saveToFile(logQuestionFile, '"question","answer"\n', question, answer);
+            res.json({ question, answer });
+        }).catch((error) => {
+            console.error('OpenAI API request failed:', error.config);
+            res.json({ question, answer });
+        });
+    } else {
+        answer = "No OPENAPI Call (debug mode)";
+        // wait 1 sec to answer
+        setTimeout(function () {
+            playSpeech(answer);
+            res.json({ question, answer });
+        }, 1000);
+    }
 }
 /* to start a https server
 const options = {

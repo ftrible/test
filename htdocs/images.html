@@ -3,6 +3,7 @@
 <head>
    <meta charSet="utf-8" />
    <title>OpenAI - Image Creation</title>
+   <link rel="icon" type="image/png" href="favicon.png"/>
 </head>
 
 <body>
@@ -21,6 +22,7 @@
       <article>
          <form action="/image" method="post" id="formImage">
             <input type="text" name="data" placeholder="Enter your description" id="question">
+            <button type="button"id="microphoneIcon">&#x1F3A4;</button> 
             <button type="submit" id="submitButton">Submit</button>
             <input type="radio" name="size" value="256x256" id="256" checked><label for="256">256</label>      
             <input type="radio" name="size" value="512x512" id="512"><label for="512">512</label> 

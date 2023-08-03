@@ -26,7 +26,8 @@ button {
   padding: 5px 10px;
   background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.5),1);
   color: white;
-  border: none;
+/*  border: none;*/
+  border: 1px solid ;
   cursor: inherit;
   border-radius: 10px;
   transition: all 0.3s;
@@ -36,10 +37,18 @@ button {
   color:black;
 }
 button:disabled, button[disabled]{
-  /*border: 1px solid #999999;*/
   background-color: #cccccc;
   color: #666666;
 }
+
+button:hover {
+  transform: scale(1.1);
+}
+
+button:active {
+  background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)),0.5)
+}
+
 
 .message {
   background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)),0.75);
@@ -58,10 +67,6 @@ button:disabled, button[disabled]{
 .disabled {
   background-color: #cccccc;
   color: #666666;
-}
-
-button:hover {
-  transform: scale(1.1);
 }
 
 nav a {
