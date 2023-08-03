@@ -175,14 +175,42 @@ function createSoundButton(question) {
   speakerButton.addEventListener('click',playSound(speakerButton, question));
   return speakerButton;
 }
+let currentMusic = null;
+
+function playMusic(button) {
+  // Check if there is a currently playing music
+  if (currentMusic) {
+    // Pause the current music
+    currentMusic.pause();
+  }
+  // Create a new audio element for the new music
+  const music = new Audio(button.audioURL);
+  music.addEventListener('ended', endMusic());
+  music.addEventListener('pause', endMusic());
+  // Store the reference to the new music in the currentMusic variable
+  currentMusic = music;
+ // Play the new music
+  music.play();
+  console.log('disable');
+  button.disabled = true;
+ 
+  function endMusic() {
+    return () => {
+      currentMusic = null; // Reset currentMusic reference when the music ends
+      button.disabled = false; // Enable the button
+      console.log("enable");
+    };
+  }
+}
 
 function playSound(button,question) {
   return async function () {
     if (button.audioURL) {
-      console.log('play file', button.audioURL);
-      var music = new Audio(button.audioURL);
-      music.play();
+      console.log('Play old file', button.audioURL);
+      playMusic(button);
     } else try {
+      button.disabled = true;
+      console.log('disable2');
       // Make an API request to the server-side playSpeech function
       const response = await fetch('/play', {
         method: 'POST',
@@ -194,12 +222,16 @@ function playSound(button,question) {
       // Handle the response as needed
       if (response.ok) {
         const data = await response.json();
-        button.audioURL = data.file; 
+        button.audioURL = data.file;      
+        console.log('Play new file', button.audioURL);
+        playMusic(button);
       } else {
         console.error('Error generating speech:', response.statusText);
+        button.disabled = false;
       }
     } catch (error) {
       console.error('Error:', error.message);
+      button.disabled = false;
     }
   };
 }

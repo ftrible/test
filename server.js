@@ -125,10 +125,9 @@ app.post('/play', async (req, res) => {
     try {
       // Call the server-side playSpeech function passing the question as an argument
       const file=await playSpeech(question);
-      console.log('Speech played successfully.' + question);
-      // Respond with a success status
+      // console.log('Speech played successfully.' + question);
+      // Return the filename
       res.json({ file: file });
- //     res.sendStatus(200);
     } catch (error) {
       console.error('Error playing speech:', error);
       res.status(500).json({ error: 'Error playing speech' });

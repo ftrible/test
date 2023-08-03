@@ -63,6 +63,7 @@ button:disabled, button[disabled]{
 button:hover {
   transform: scale(1.1);
 }
+
 nav a {
   text-decoration: none;
   padding: 5px 10px;
