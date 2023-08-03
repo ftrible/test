@@ -22,41 +22,26 @@ const data = {
     similarity_boost: 0.5,
   },
 };
-async function playSpeech(text) {
+async function playSpeech(text,debug) {
   // Generate a hash based on the text to use as a cache key
   const textHash = createHash('md5').update(text).digest('hex');
-  const localName=textHash+'.mp3';
+  let localName=textHash+'.mp3';
   const fmp3 = path.join(__dirname, "htdocs", "uploads", localName);
   const cachedSpeech = fs.existsSync(fmp3);
   try {
     if(cachedSpeech) {
       console.log('File '+fmp3+' exists');
-    } else {
+    } else if (!debug){
       data.text=text;
       const response = await axios.post(url, data, { headers, responseType: 'arraybuffer' });
       await writeFileAsync(fmp3, response.data);
       console.log('File '+fmp3+' Generated');
+    } else {
+      localName = "unknown.mp3";
     }
     return "uploads/" + localName;
   } catch (error) {
     console.error('Error generating speech:', error.message);
-  }
-}
-
-async function fileExists(filePath) {
- try {
-    const stats = await fs.stat(filePath);
-    console.log(stats);
-    if (stats.isFile()) {
-      console.log('file');
-      return true;
-    }
-    console.log('not file');
-    return false;
-  } catch (error) {
-    // File not found or other read error
-    console.log('file error' + error);
-    return false;
   }
 }
 

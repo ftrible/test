@@ -40,6 +40,10 @@ button:disabled, button[disabled]{
   background-color: #cccccc;
   color: #666666;
 }
+.mike:disabled{
+  background-color: #cc0000;
+  color: #660000;
+}
 
 button:hover {
   transform: scale(1.1);

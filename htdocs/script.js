@@ -1,6 +1,7 @@
 // document elements used
 const submitButton = document.getElementById('submitButton');
 const qform = document.getElementById('formQuestion');
+const qtext = document.getElementById('question');
 const iform = document.getElementById('formImage');
 const vform = document.getElementById('formVariation');
 const history = document.getElementById('history');
@@ -162,9 +163,7 @@ mike.addEventListener('click', async function () {
     if (response.ok) {
       console.log('ok');
       const data = await response.json();
-      addRow(data.question, data.answer);
-      renderTable(1);
-      renderPagination();
+      qtext.value = data.transcript;
       mike.disabled = false;
     } else {
       console.error('Error analyzing speech:', response.statusText);
@@ -195,6 +194,7 @@ function playMusic(button) {
   }
   // Create a new audio element for the new music
   const music = new Audio(button.audioURL);
+  music.playbackRate=1.2;
   music.addEventListener('ended', endMusic());
   music.addEventListener('pause', endMusic());
   // Store the reference to the new music in the currentMusic variable

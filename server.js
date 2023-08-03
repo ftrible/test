@@ -123,7 +123,7 @@ app.post('/play', async (req, res) => {
     const { data: question } = req.body;
     try {
       // Call the server-side playSpeech function passing the question as an argument
-      const file=await playSpeech(question);
+      const  file=await playSpeech(question,debug);
       // Return the filename
       res.json({ file: file });
     } catch (error) {
@@ -167,8 +167,8 @@ app.post('/image', (req, res) => {
 app.post('/listen', (req, res) => {
     const s = new SpeechListener()
         .on('transcribed', (transcript) => {
-            console.log(transcript);
-            executeOpenAPI(transcript, res);
+            console.log(transcript);           
+            res.json({ transcript });
         })
         .on('error', () => {
             console.error(error);
@@ -269,7 +269,6 @@ function executeOpenAPI(question, res) {
         answer = "No OPENAPI Call (debug mode)";
         // wait 1 sec to answer
         setTimeout(function () {
-            playSpeech(answer);
             res.json({ question, answer });
         }, 1000);
     }
