@@ -36,8 +36,8 @@ class SpeechListener extends EventEmitter {
 
   constructor() {
     super()
-    let buffer = []
-    const speaking = false
+    const buffer = []
+    //const speaking = false
 
     this._recorder = new SpeechRecorder({
       consecutiveFramesForSilence: 7,

@@ -122,16 +122,16 @@ app.get('/variationhistory', (req, res) => {
 app.post('/play', async (req, res) => {
     const { data: question } = req.body;
     try {
-      // Call the server-side playSpeech function passing the question as an argument
-      const  file=await playSpeech(question,debug);
-      // Return the filename
-      res.json({ file: file });
+        // Call the server-side playSpeech function passing the question as an argument
+        const file = await playSpeech(question, debug);
+        // Return the filename
+        res.json({ file: file });
     } catch (error) {
-      console.error('Error playing speech:', error);
-      res.status(500).json({ error: 'Error playing speech' });
+        console.error('Error playing speech:', error);
+        res.status(500).json({ error: 'Error playing speech' });
     }
-  });
-  
+});
+
 // POST route to retrieve image descriptions and generate response
 app.post('/image', (req, res) => {
     console.dir(req.body);
@@ -167,7 +167,7 @@ app.post('/image', (req, res) => {
 app.post('/listen', (req, res) => {
     const s = new SpeechListener()
         .on('transcribed', (transcript) => {
-            console.log(transcript);           
+            console.log(transcript);
             res.json({ transcript });
         })
         .on('error', () => {
@@ -258,7 +258,7 @@ function executeOpenAPI(question, res) {
             presence_penalty: 0,
         }).then((completion) => {
             answer = completion.data.choices[0].message.content;
-            playSpeech(answer);
+            playSpeech(answer, debug);
             saveToFile(logQuestionFile, '"question","answer"\n', question, answer);
             res.json({ question, answer });
         }).catch((error) => {
@@ -273,10 +273,3 @@ function executeOpenAPI(question, res) {
         }, 1000);
     }
 }
-/* to start a https server
-const options = {
-    key: fs.readFileSync('client-key.pem'),
-    cert: fs.readFileSync('client-cert.pem')
-};
-   
-https.createServer(options, app).listen(port);*/
