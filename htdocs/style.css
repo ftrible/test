@@ -26,12 +26,14 @@ button {
   padding: 5px 10px;
   background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.5),1);
   color: white;
-/*  border: none;*/
+  font-size: 36px;
   border: 1px solid ;
   cursor: inherit;
   border-radius: 10px;
   transition: all 0.3s;
 }
+
+
 .pagination {
   background-color: hsla(var(--mhue),var(--msat),calc(var(--mlum)*0.5),0.1);
   color:black;
@@ -39,6 +41,10 @@ button {
 button:disabled, button[disabled]{
   background-color: #cccccc;
   color: #666666;
+}
+button:recording, button[recording]{
+  background-color: #ccc000;
+  color: #660000;
 }
 .mike:disabled{
   background-color: #cc0000;
@@ -175,4 +181,5 @@ footer {
     -webkit-flex-direction: column;
     flex-direction: column;
   }
+    font-size: 36px; /* Increase font size for mobile */
 }

@@ -7,6 +7,8 @@ const fs = require('fs');
 const path = require('path');
 const { playSpeech } = require('./speak');
 const { SpeechListener } = require('./listen');
+const https = require('https');
+const ffmpeg = require('fluent-ffmpeg');
 
 // OpenAI configuration
 const key = process.env.OPENAI_API_KEY;
@@ -40,6 +42,31 @@ app.use(express.static('htdocs'));
 //server info
 const hostname = '127.0.0.1';
 const port = 8080;
+/*
+const httpsPort = 443;
+const ckey = fs.readFileSync('./certs/client-key.pem');
+const cert = fs.readFileSync('./certs/client-cert.pem');
+
+const server = https.createServer({key: ckey, cert: cert }, app);
+
+app.use((req, res, next) => {
+  if (!req.secure) {
+    return res.redirect('https://' + req.headers.host + req.url);
+  }
+  next();
+})
+
+// Start the server
+// for production app.set('env','production');
+
+app.listen(port, () => {
+    console.log(`Server running at http://${hostname}:${port}/`);
+});
+// https server
+server.listen(httpsPort, function () {
+    console.log(`Server running at https://${hostname}:${httpsPort}/`)
+});
+*/
 
 // Debug mode not to call OpenAI API
 let debug = true;
@@ -55,8 +82,8 @@ function saveToImage(fn, base64) {
     const localName = fn.replace(/\s+/g, '') + ".png";
     // build full name
     const fileName = path.join(__dirname, "htdocs", "uploads", localName);
-    const buffer = Buffer.from(base64, "base64");
-    fs.writeFileSync(fileName, buffer);
+    const buffer1 = Buffer.from(base64, "base64");
+    fs.writeFileSync(fileName, buffer1);
     return "uploads/" + localName;
 }
 
@@ -176,6 +203,52 @@ app.post('/listen', (req, res) => {
         });
 });
 
+
+app.post('/listen2', upload.single('audioFile'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No audio file uploaded');
+      }
+      const webmFilePath = req.file.path;
+      const wavFilePath = webmFilePath.replace('.webm', '.wav');
+
+      //  use ffmpeg to transform req.file webm file into a wav file using wavFile name
+      // on mac: brew install ffmpeg
+      ffmpeg()
+      .input(webmFilePath)
+      .audioFrequency(16000) // Set audio sample rate to 16 kHz
+      .output(wavFilePath)
+      .on('end', () => {
+          const s = new SpeechListener(wavFilePath)
+              .on('transcribed', (transcript) => {
+                fs.unlink(webmFilePath, (err) => {
+                    if (err) {
+                        console.error('Error deleting webm file:', err);
+                    } else {
+                        console.log('Webm file deleted');
+                    }
+                });
+                fs.unlink(wavFilePath, (err) => {
+                    if (err) {
+                        console.error('Error deleting wav file:', err);
+                    } else {
+                        console.log('Wav file deleted');
+                    }
+                });
+                  console.log(transcript);
+                  res.json({ transcript });
+              })
+              .on('error', (error) => {
+                  console.error(error);
+                  res.sendStatus(500);
+              });
+      })
+      .on('error', (error) => {
+          console.error('FFmpeg error:', error);
+          res.sendStatus(500);
+      })
+      .run();
+});
+
 // POST route to retrieve image descriptions and generate response
 app.post('/variation', upload.single('data'), (req, res) => {
     let answer = 'error.png';
@@ -240,7 +313,7 @@ function executeOpenAPI(question, res) {
     if (!debug) {
         // Make the API request to OpenAI
         const completion = openai.createChatCompletion({
-            model: "gpt-3.5-turbo",
+            model: "gpt-4", //"gpt-3.5-turbo",
             messages: [
                 {
                     "role": "system",

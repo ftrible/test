@@ -64,7 +64,7 @@ fetch(path + "history")
   .then((response) => response.json())
   .then((data) => {
     data.forEach((row) => {
-//      console.log(row);
+      //      console.log(row);
       if (iform) {
         addRow(row.description, row.url);
       } else {
@@ -132,7 +132,7 @@ form.addEventListener('submit', (event) => {
   })
     .then((response) => response.json())
     .then((data) => {
- //     console.log(data);
+      //     console.log(data);
       addRow(data.question, data.answer);
       renderTable(1);
       renderPagination();
@@ -151,7 +151,7 @@ form.addEventListener('submit', (event) => {
     });
 });
 
-// Event listener for the microphone icon click
+/* Event listener for the microphone icon click
 mike.addEventListener('click', async function () {
   mike.disabled = true;
   try {
@@ -175,7 +175,70 @@ mike.addEventListener('click', async function () {
     document.body.style.cursor = 'default';
   }
 
-});
+});*/
+
+let isRecording = false;
+let audioChunks = [];
+
+// Attach click event listener to the 'mike' button
+mike.addEventListener('mousedown', startRecording);
+mike.addEventListener('mouseup', stopRecordingAndUpload);
+
+let mediaRecorder = null;
+// Function to start recording audio
+async function startRecording() {
+  mike.classList.add('recording');
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  mediaRecorder = new MediaRecorder(stream);
+  isRecording = true;
+  mediaRecorder.ondataavailable = (event) => {
+    if (event.data.size > 0) {
+      console.log("chunk "+event.data.size);
+      audioChunks.push(event.data);
+    }
+  };
+
+  mediaRecorder.start();
+}
+
+// Function to stop recording and upload audio
+async function stopRecordingAndUpload() {
+  if (isRecording) {
+    isRecording = false;
+    mike.classList.remove('recording');
+    //  const mediaRecorder = audioChunks[0].recorder;
+    mediaRecorder.stop();
+
+    mediaRecorder.onstop = async () => {
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      const formData = new FormData();
+      formData.append('audioFile', audioBlob,'audio.webm');
+
+      try {
+        document.body.style.cursor = 'progress';
+        const response = await fetch('/listen2', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.ok) {
+          console.log('Audio uploaded successfully');
+          const data = await response.json();
+          qtext.value = data.transcript;
+        } else {
+          console.error('Error uploading audio:', response.statusText);
+        }
+        mediaRecorder = null;
+        document.body.style.cursor = 'default';
+      } catch (error) {
+        console.error('Error:', error);
+        document.body.style.cursor = 'default';
+      }
+
+      audioChunks = [];
+    };
+  }
+}
 
 
 function createSoundButton(question) {
@@ -199,11 +262,11 @@ function playMusic(button) {
   music.addEventListener('pause', endMusic());
   // Store the reference to the new music in the currentMusic variable
   currentMusic = music;
- // Play the new music
+  // Play the new music
   music.play();
- // disable the button
+  // disable the button
   button.disabled = true;
- 
+
   function endMusic() {
     return () => {
       currentMusic = null; // Reset currentMusic reference when the music ends
@@ -232,7 +295,7 @@ function playSound(button,question) {
       // Handle the response as needed
       if (response.ok) {
         const data = await response.json();
-        button.audioURL = data.file;      
+        button.audioURL = data.file;
         console.log('Play new file', button.audioURL);
         playMusic(button);
       } else {

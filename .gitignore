@@ -11,3 +11,4 @@
 /htdocs/.DS_Store
 /htdocs/uploads/.DS_Store
 /bin/*
+/certs/*
