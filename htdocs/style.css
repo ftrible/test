@@ -181,5 +181,9 @@ footer {
     -webkit-flex-direction: column;
     flex-direction: column;
   }
-    font-size: 36px; /* Increase font size for mobile */
+ font-size 36px; /* Increase font size for mobile */
+}
+
+.hidden {
+  display: none;
 }

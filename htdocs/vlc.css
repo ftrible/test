@@ -1,0 +1,41 @@
+#playlist-container {
+    list-style: none; /* Remove default list styles */
+    padding: 0;
+}
+
+li {
+    margin-bottom: 2px; /* Add spacing between radio buttons */
+}
+
+/* Style the radio buttons as needed 
+input[type="radio"] {
+    
+}
+*/
+/* Container for flexboxes */
+section {
+    display: -webkit-flex;
+    display: flex;
+  }
+/* Style the navigation menu */
+nav {
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+  }
+  
+  /* Style the content */
+  article {
+    -webkit-flex: 3;
+    -ms-flex: 3;
+    flex: 3;
+    padding: 10px;
+  }
+  
+  /* Style the footer */
+  footer {
+    background-color:white;
+    color: black;
+    padding: 10px;
+    text-align: right;
+  }

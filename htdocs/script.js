@@ -12,6 +12,26 @@ let tableData = [];
 const itemsPerPage = 5;
 let currentMusic = null;
 
+// Function to enable options
+function enableOptions(options) {
+  let first=true;
+  options.forEach(option => {
+    document.getElementById(option).disabled=false;
+    if (first) {
+      document.getElementById(option).checked=true;
+      first=false;
+    }
+  });
+}
+
+// Function to disable options
+function disableOptions(options) {
+  options.forEach(option => {
+    document.getElementById(option).disabled=true;
+    document.getElementById(option).checked=false;
+  });
+}
+
 function renderTable(pageNumber) {
   const startIndex = (pageNumber - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -183,7 +203,26 @@ let audioChunks = [];
 // Attach click event listener to the 'mike' button
 mike.addEventListener('mousedown', startRecording);
 mike.addEventListener('mouseup', stopRecordingAndUpload);
+// Get the form and radio buttons
+if (iform) {
+  const modelRadio = iform.elements['model'];
+  const sizeRadio = iform.elements['size'];
 
+  // Add change event listener to the form
+  form.addEventListener('change', function () {
+    // Check the selected model
+    const selectedModel = modelRadio.value;
+
+    // Show or hide size options based on the selected model
+    if (selectedModel === 'dall-e-2') {
+      enableOptions(['256', '512', '1024']);
+      disableOptions(['1792H', '1792V']);
+    } else if (selectedModel === 'dall-e-3') {
+      enableOptions(['1024', '1792H', '1792V']);
+      disableOptions(['256', '512']);
+    }
+  });
+}
 let mediaRecorder = null;
 // Function to start recording audio
 async function startRecording() {
@@ -193,7 +232,7 @@ async function startRecording() {
   isRecording = true;
   mediaRecorder.ondataavailable = (event) => {
     if (event.data.size > 0) {
-      console.log("chunk "+event.data.size);
+      console.log("chunk " + event.data.size);
       audioChunks.push(event.data);
     }
   };
@@ -212,7 +251,7 @@ async function stopRecordingAndUpload() {
     mediaRecorder.onstop = async () => {
       const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
       const formData = new FormData();
-      formData.append('audioFile', audioBlob,'audio.webm');
+      formData.append('audioFile', audioBlob, 'audio.webm');
 
       try {
         document.body.style.cursor = 'progress';
@@ -245,7 +284,7 @@ function createSoundButton(question) {
   const speakerButton = document.createElement('button');
   speakerButton.type = 'button';
   speakerButton.innerHTML = '&#x1F508;';
-  speakerButton.addEventListener('click',playSound(speakerButton, question));
+  speakerButton.addEventListener('click', playSound(speakerButton, question));
   return speakerButton;
 }
 
@@ -257,7 +296,7 @@ function playMusic(button) {
   }
   // Create a new audio element for the new music
   const music = new Audio(button.audioURL);
-  music.playbackRate=1.2;
+  music.playbackRate = 1.2;
   music.addEventListener('ended', endMusic());
   music.addEventListener('pause', endMusic());
   // Store the reference to the new music in the currentMusic variable
@@ -276,7 +315,7 @@ function playMusic(button) {
   }
 }
 
-function playSound(button,question) {
+function playSound(button, question) {
   return async function () {
     if (button.audioURL) {
       console.log('Play old file', button.audioURL);

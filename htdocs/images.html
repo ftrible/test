@@ -24,9 +24,18 @@
             <input type="text" name="data" placeholder="Enter your description" id="question">
             <button type="button"id="microphoneIcon">&#x1F3A4;</button> 
             <button type="submit" id="submitButton">Submit</button>
+            <!-- //DALL·E-3 accepts three different image sizes: 1024px by 1024px, 1792px by 1024px, and 1024px by 1792px.-->
+            <div id="modelContainer">
+            <input type="radio" name="model" value="dall-e-2" id="DallE2" checked><label for="DallE2">DallE-2</label>      
+            <input type="radio" name="model" value="dall-e-3" id="DallE3"><label for="DallE3">DallE-3</label> 
+            </div>
+            <div id="sizeContainer">
             <input type="radio" name="size" value="256x256" id="256" checked><label for="256">256</label>      
             <input type="radio" name="size" value="512x512" id="512"><label for="512">512</label> 
             <input type="radio" name="size" value="1024x1024"id="1024"><label for="1024">1024</label> 
+            <input type="radio" name="size" value="1792x1024" id="1792H" disabled><label for="1792H">1792H</label>      
+            <input type="radio" name="size" value="1024x1792" id="1792V" disabled><label for="1792V">1792V</label> 
+            </div>
          </form>
          <h1>History</h1>
          <table>

@@ -167,10 +167,14 @@ app.post('/image', (req, res) => {
     if (!debug) {
         // Make the API request to OpenAI
         const completion = openai.createImage({
+            style: "natural", 
+            quality: "hd", 
+            model: req.body.model,
             prompt: question,
             n: 1,
             size: req.body.size,
             response_format: "b64_json"
+            //DALL·E-3 accepts three different image sizes: 1024px by 1024px, 1792px by 1024px, and 1024px by 1792px.
         }).then((completion) => {
             answer = completion.data.data[0].b64_json;
             const name = saveToImage(question, answer);
@@ -179,6 +183,7 @@ app.post('/image', (req, res) => {
             res.json({ question, answer });
         }).catch((error) => {
             console.error('OpenAI API request failed:', error);
+        //  error.response.status // error.response.statusText
             res.json({ question, answer });
         });
     } else {
@@ -346,3 +351,16 @@ function executeOpenAPI(question, res) {
         }, 1000);
     }
 }
+
+async function getLocation() {
+    const response = await fetch("https://ipapi.co/json/");
+    const locationData = await response.json();
+    return locationData;
+  }
+
+  async function getCurrentWeather(latitude, longitude) {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=apparent_temperature`;
+    const response = await fetch(url);
+    const weatherData = await response.json();
+    return weatherData;
+  }
